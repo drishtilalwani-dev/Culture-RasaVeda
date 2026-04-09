@@ -22,7 +22,6 @@ h1 {
   text-align: center;
 }
 
-/* Header */
 .header {
   display: flex;
   justify-content: space-between;
@@ -36,15 +35,12 @@ button {
   color: white;
   cursor: pointer;
   border-radius: 6px;
-  transition: 0.3s;
 }
 
 button:hover {
   background: linear-gradient(135deg, #ff7a18, #ffb347);
-  transform: scale(1.05);
 }
 
-/* Calendar */
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -59,16 +55,14 @@ button:hover {
   cursor: pointer;
   position: relative;
   text-align: center;
-  transition: all 0.25s ease;
+  transition: 0.2s;
 }
 
 .day:hover {
-  transform: translateY(-5px) scale(1.03);
-  background: linear-gradient(135deg, #f0f8ff, #e6f7ff);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  transform: scale(1.05);
+  background: #e6f7ff;
 }
 
-/* Marker */
 .marker {
   width: 10px;
   height: 10px;
@@ -77,35 +71,8 @@ button:hover {
   bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
-  animation: pulse 1.5s infinite;
 }
 
-@keyframes pulse {
-  0% { transform: translateX(-50%) scale(1); }
-  50% { transform: translateX(-50%) scale(1.5); }
-  100% { transform: translateX(-50%) scale(1); }
-}
-
-/* Tooltip */
-.tooltip {
-  position: absolute;
-  top: -25px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: black;
-  color: white;
-  padding: 3px 8px;
-  font-size: 12px;
-  border-radius: 4px;
-  opacity: 0;
-  transition: 0.2s;
-}
-
-.day:hover .tooltip {
-  opacity: 1;
-}
-
-/* Modal */
 .modal {
   display: none;
   position: fixed;
@@ -114,7 +81,6 @@ button:hover {
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(4px);
 }
 
 .modal-content {
@@ -122,48 +88,7 @@ button:hover {
   width: 350px;
   margin: 10% auto;
   padding: 20px;
-  border-radius: 12px;
-  animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-  from { transform: translateY(50px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.food-card {
-  border: 1px solid #ddd;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 8px;
-  transition: 0.2s;
-}
-
-.food-card:hover {
-  background: #fff7e6;
-  transform: scale(1.03);
-}
-
-/* Filter */
-.filter {
-  margin-top: 10px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-/* Dark Mode */
-.dark {
-  background: #121212;
-  color: white;
-}
-
-.dark .day {
-  background: #1e1e1e;
-}
-
-.dark .modal-content {
-  background: #2a2a2a;
+  border-radius: 10px;
 }
 </style>
 </head>
@@ -175,19 +100,8 @@ button:hover {
 
   <div class="header">
     <button onclick="prevMonth()">⬅ Prev</button>
-    <h3 id="monthTitle">April 2026</h3>
+    <h3 id="monthTitle"></h3>
     <button onclick="nextMonth()">Next ➡</button>
-  </div>
-
-  <div class="filter">
-    <label>Filter Region:</label>
-    <select id="regionFilter" onchange="renderCalendar()">
-      <option value="All">All</option>
-      <option value="Maharashtra">Maharashtra</option>
-      <option value="Tamil Nadu">Tamil Nadu</option>
-    </select>
-
-    <button onclick="toggleDarkMode()">🌙 Dark Mode</button>
   </div>
 
   <div class="calendar" id="calendar"></div>
@@ -205,61 +119,190 @@ button:hover {
 
 <script>
 const festivals = [
+  // January
   {
-    day: 10,
-    name: "Ganesh Chaturthi",
-    region: "Maharashtra",
-    foods: [
-      { name: "Modak", desc: "Sweet dumplings loved by Lord Ganesha" }
-    ]
-  },
-  {
-    day: 14,
+    date: "2026-01-14",
     name: "Pongal",
     region: "Tamil Nadu",
     foods: [
       { name: "Sakkarai Pongal", desc: "Sweet rice dish" },
       { name: "Ven Pongal", desc: "Savory rice dish" }
     ]
+  },
+
+  // February
+  {
+    date: "2026-02-19",
+    name: "Maha Shivratri",
+    region: "Pan India",
+    foods: [
+      { name: "Fruits & Milk", desc: "Light fasting foods" }
+    ]
+  },
+
+  // March
+  {
+    date: "2026-03-25",
+    name: "Holi",
+    region: "North India",
+    foods: [
+      { name: "Gujiya", desc: "Sweet dumpling filled with khoya" },
+      { name: "Thandai", desc: "Cold festive drink" }
+    ]
+  },
+
+  // April
+  {
+    date: "2026-04-14",
+    name: "Vishu",
+    region: "Kerala",
+    foods: [
+      { name: "Sadya", desc: "Traditional vegetarian feast" }
+    ]
+  },
+
+  // May
+  {
+    date: "2026-05-23",
+    name: "Buddha Purnima",
+    region: "Pan India",
+    foods: [
+      { name: "Kheer", desc: "Sweet rice pudding" }
+    ]
+  },
+
+  // June
+  {
+    date: "2026-06-21",
+    name: "Rath Yatra",
+    region: "Odisha",
+    foods: [
+      { name: "Poda Pitha", desc: "Traditional baked cake" }
+    ]
+  },
+
+  // July
+  {
+    date: "2026-07-21",
+    name: "Eid al-Adha",
+    region: "Pan India",
+    foods: [
+      { name: "Biryani", desc: "Spiced rice with meat" }
+    ]
+  },
+
+  // August
+  {
+    date: "2026-08-15",
+    name: "Independence Day",
+    region: "India",
+    foods: [
+      { name: "Ladoo", desc: "Popular Indian sweet" }
+    ]
+  },
+
+  // September
+  {
+    date: "2026-09-17",
+    name: "Ganesh Chaturthi",
+    region: "Maharashtra",
+    foods: [
+      { name: "Modak", desc: "Sweet dumplings offered to Lord Ganesha" }
+    ]
+  },
+
+  // October
+  {
+    date: "2026-10-20",
+    name: "Dussehra",
+    region: "Pan India",
+    foods: [
+      { name: "Jalebi", desc: "Sweet deep-fried dessert" }
+    ]
+  },
+
+  // November
+  {
+    date: "2026-11-12",
+    name: "Diwali",
+    region: "Pan India",
+    foods: [
+      { name: "Kaju Katli", desc: "Cashew-based sweet" },
+      { name: "Ladoo", desc: "Round sweet balls" }
+    ]
+  },
+
+  // December
+  {
+    date: "2026-12-25",
+    name: "Christmas",
+    region: "Pan India",
+    foods: [
+      { name: "Plum Cake", desc: "Rich fruit cake" },
+      { name: "Cookies", desc: "Baked festive treats" }
+    ]
   }
 ];
 
+let currentDate = new Date();
+
 const calendar = document.getElementById("calendar");
+const monthTitle = document.getElementById("monthTitle");
 
 function renderCalendar() {
   calendar.innerHTML = "";
-  const filter = document.getElementById("regionFilter").value;
 
-  for (let i = 1; i <= 30; i++) {
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+
+  // Month name
+  const monthNames = [
+    "January","February","March","April","May","June",
+    "July","August","September","October","November","December"
+  ];
+  monthTitle.innerText = `${monthNames[month]} ${year}`;
+
+  // First day & days in month
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // Empty cells before first day
+  for (let i = 0; i < firstDay; i++) {
+    const empty = document.createElement("div");
+    calendar.appendChild(empty);
+  }
+
+  // Create days
+  for (let day = 1; day <= daysInMonth; day++) {
     const dayDiv = document.createElement("div");
     dayDiv.className = "day";
-    dayDiv.innerText = i;
+    dayDiv.innerText = day;
 
-    const fest = festivals.find(f =>
-      f.day === i && (filter === "All" || f.region === filter)
-    );
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+
+    const fest = festivals.find(f => f.date === dateStr);
 
     if (fest) {
       const marker = document.createElement("div");
       marker.className = "marker";
-
-      // Color coding
-      marker.style.background =
-        fest.region === "Maharashtra" ? "orange" : "green";
-
+      marker.style.background = "red";
       dayDiv.appendChild(marker);
-
-      // Tooltip
-      const tooltip = document.createElement("div");
-      tooltip.className = "tooltip";
-      tooltip.innerText = fest.name;
-      dayDiv.appendChild(tooltip);
 
       dayDiv.onclick = () => openModal(fest);
     }
 
     calendar.appendChild(dayDiv);
   }
+}
+
+function prevMonth() {
+  currentDate.setMonth(currentDate.getMonth() - 1);
+  renderCalendar();
+}
+
+function nextMonth() {
+  currentDate.setMonth(currentDate.getMonth() + 1);
+  renderCalendar();
 }
 
 function openModal(festival) {
@@ -272,7 +315,6 @@ function openModal(festival) {
 
   festival.foods.forEach(food => {
     const div = document.createElement("div");
-    div.className = "food-card";
     div.innerHTML = `<strong>${food.name}</strong><br>${food.desc}`;
     foodList.appendChild(div);
   });
@@ -280,18 +322,6 @@ function openModal(festival) {
 
 function closeModal() {
   document.getElementById("modal").style.display = "none";
-}
-
-function toggleDarkMode() {
-  document.body.classList.toggle("dark");
-}
-
-function prevMonth() {
-  alert("Add real month logic if needed");
-}
-
-function nextMonth() {
-  alert("Add real month logic if needed");
 }
 
 renderCalendar();
