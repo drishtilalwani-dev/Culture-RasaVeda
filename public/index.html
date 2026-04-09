@@ -1,14 +1,301 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>RasaVeda 🌶️</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+<meta charset="UTF-8">
+<title>Festival Food Calendar</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f5f5f5;
+  transition: 0.3s;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+button {
+  padding: 8px 14px;
+  border: none;
+  background: linear-gradient(135deg, #333, #555);
+  color: white;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #ff7a18, #ffb347);
+  transform: scale(1.05);
+}
+
+/* Calendar */
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.day {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  position: relative;
+  text-align: center;
+  transition: all 0.25s ease;
+}
+
+.day:hover {
+  transform: translateY(-5px) scale(1.03);
+  background: linear-gradient(135deg, #f0f8ff, #e6f7ff);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Marker */
+.marker {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.5); }
+  100% { transform: translateX(-50%) scale(1); }
+}
+
+/* Tooltip */
+.tooltip {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: black;
+  color: white;
+  padding: 3px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: 0.2s;
+}
+
+.day:hover .tooltip {
+  opacity: 1;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: white;
+  width: 350px;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 12px;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.food-card {
+  border: 1px solid #ddd;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.food-card:hover {
+  background: #fff7e6;
+  transform: scale(1.03);
+}
+
+/* Filter */
+.filter {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Dark Mode */
+.dark {
+  background: #121212;
+  color: white;
+}
+
+.dark .day {
+  background: #1e1e1e;
+}
+
+.dark .modal-content {
+  background: #2a2a2a;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Festival Food Calendar</h1>
+
+  <div class="header">
+    <button onclick="prevMonth()">⬅ Prev</button>
+    <h3 id="monthTitle">April 2026</h3>
+    <button onclick="nextMonth()">Next ➡</button>
+  </div>
+
+  <div class="filter">
+    <label>Filter Region:</label>
+    <select id="regionFilter" onchange="renderCalendar()">
+      <option value="All">All</option>
+      <option value="Maharashtra">Maharashtra</option>
+      <option value="Tamil Nadu">Tamil Nadu</option>
+    </select>
+
+    <button onclick="toggleDarkMode()">🌙 Dark Mode</button>
+  </div>
+
+  <div class="calendar" id="calendar"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h2 id="festivalName"></h2>
+    <p id="festivalRegion"></p>
+    <div id="foodList"></div>
+    <button onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<script>
+const festivals = [
+  {
+    day: 10,
+    name: "Ganesh Chaturthi",
+    region: "Maharashtra",
+    foods: [
+      { name: "Modak", desc: "Sweet dumplings loved by Lord Ganesha" }
+    ]
+  },
+  {
+    day: 14,
+    name: "Pongal",
+    region: "Tamil Nadu",
+    foods: [
+      { name: "Sakkarai Pongal", desc: "Sweet rice dish" },
+      { name: "Ven Pongal", desc: "Savory rice dish" }
+    ]
+  }
+];
+
+const calendar = document.getElementById("calendar");
+
+function renderCalendar() {
+  calendar.innerHTML = "";
+  const filter = document.getElementById("regionFilter").value;
+
+  for (let i = 1; i <= 30; i++) {
+    const dayDiv = document.createElement("div");
+    dayDiv.className = "day";
+    dayDiv.innerText = i;
+
+    const fest = festivals.find(f =>
+      f.day === i && (filter === "All" || f.region === filter)
+    );
+
+    if (fest) {
+      const marker = document.createElement("div");
+      marker.className = "marker";
+
+      // Color coding
+      marker.style.background =
+        fest.region === "Maharashtra" ? "orange" : "green";
+
+      dayDiv.appendChild(marker);
+
+      // Tooltip
+      const tooltip = document.createElement("div");
+      tooltip.className = "tooltip";
+      tooltip.innerText = fest.name;
+      dayDiv.appendChild(tooltip);
+
+      dayDiv.onclick = () => openModal(fest);
+    }
+
+    calendar.appendChild(dayDiv);
+  }
+}
+
+function openModal(festival) {
+  document.getElementById("modal").style.display = "block";
+  document.getElementById("festivalName").innerText = festival.name;
+  document.getElementById("festivalRegion").innerText = festival.region;
+
+  const foodList = document.getElementById("foodList");
+  foodList.innerHTML = "";
+
+  festival.foods.forEach(food => {
+    const div = document.createElement("div");
+    div.className = "food-card";
+    div.innerHTML = `<strong>${food.name}</strong><br>${food.desc}`;
+    foodList.appendChild(div);
+  });
+}
+
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+}
+
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+}
+
+function prevMonth() {
+  alert("Add real month logic if needed");
+}
+
+function nextMonth() {
+  alert("Add real month logic if needed");
+}
+
+renderCalendar();
+</script>
+
+</body>
 </html>
